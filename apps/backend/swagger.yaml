@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  title: Insurance CRM API
+  description: API documentation for the Insurance CRM system built using Node.js, Express, and MongoDB.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:5001/api
+tags:
+  - name: Customers
+    description: Endpoints for managing customer records.
+  - name: Policies
+    description: Endpoints for managing policy records.
+  - name: Tasks
+    description: Endpoints for managing tasks
+paths:
+  /customers:
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer
+      requestBody:
+        description: Customer object that needs to be added to the CRM
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        "201":
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "500":
+          description: Error creating customer
+    get:
+      tags:
+        - Customers
+      summary: Retrieve all customers
+      responses:
+        "200":
+          description: A list of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        "500":
+          description: Error retrieving customers
+  /customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Retrieve a customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The customer ID
+      responses:
+        "200":
+          description: A customer object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "404":
+          description: Customer not found
+        "500":
+          description: Error retrieving customer
+    put:
+      tags:
+        - Customers
+      summary: Update a customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The customer ID
+      requestBody:
+        description: Updated customer object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        "200":
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "404":
+          description: Customer not found
+        "500":
+          description: Error updating customer
+    delete:
+      tags:
+        - Customers
+      summary: Delete a customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The customer ID
+      responses:
+        "200":
+          description: Customer deleted successfully
+        "404":
+          description: Customer not found
+        "500":
+          description: Error deleting customer
+  /customers/search:
+    get:
+      tags:
+        - Customers
+      summary: Search for customers by name (prefix-based)
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Partial customer name to search. Returns customers whose names start with the provided value.
+      responses:
+        "200":
+          description: A list of customers matching the search criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        "400":
+          description: Missing required query parameter.
+        "500":
+          description: Error searching for customers.
+
+
+  /policies:
+    post:
+      tags:
+        - Policies
+      summary: Create a new policy and attach it to a customer
+      requestBody:
+        description: Policy object that needs to be added to the CRM
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy'
+      responses:
+        "201":
+          description: Policy created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        "500":
+          description: Error creating policy
+    get:
+      tags:
+        - Policies
+      summary: Retrieve all policies
+      responses:
+        "200":
+          description: A list of policies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Policy'
+        "500":
+          description: Error retrieving policies
+
+  /policies/{id}:
+    get:
+      tags:
+        - Policies
+      summary: Retrieve a policy by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The policy ID
+      responses:
+        "200":
+          description: A policy object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        "404":
+          description: Policy not found
+        "500":
+          description: Error retrieving policy
+    put:
+      tags:
+        - Policies
+      summary: Update a policy by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The policy ID
+      requestBody:
+        description: Updated policy object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy'
+      responses:
+        "200":
+          description: Policy updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        "404":
+          description: Policy not found
+        "500":
+          description: Error updating policy
+    delete:
+      tags:
+        - Policies
+      summary: Delete a policy by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The policy ID
+      responses:
+        "200":
+          description: Policy deleted successfully
+        "404":
+          description: Policy not found
+        "500":
+          description: Error deleting policy
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Retrieve renewal tasks, optionally filtered by customerId
+      parameters:
+        - in: query
+          name: customerId
+          schema:
+            type: string
+          required: false
+          description: (Optional) Filter tasks by customer ID.
+      responses:
+        "200":
+          description: A list of renewal tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        "500":
+          description: Error retrieving tasks
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique identifier for the customer.
+        name:
+          type: string
+          description: Name of the customer.
+        email:
+          type: string
+          description: Email address of the customer.
+        phone:
+          type: string
+          description: Phone number of the customer.
+      required:
+        - name
+        - email
+    Policy:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique identifier for the policy.
+        policyNumber:
+          type: string
+          description: Policy number.
+        startDate:
+          type: string
+          format: date
+          description: Policy start date.
+        expiryDate:
+          type: string
+          format: date
+          description: Policy expiry date.
+        customerId:
+          type: string
+          description: The ID of the customer this policy is attached to.
+        customerEmail:
+          type: string
+          description: Email address of the customer associated with the policy.
+      required:
+        - policyNumber
+        - startDate
+        - expiryDate
+        - customerId
+    Task:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique identifier generated by MongoDB.
+        policyNumber:
+          type: string
+          description: Policy number associated with the task.
+        expiryDate:
+          type: string
+          format: date
+          description: Policy expiry date.
+        customerId:
+          type: string
+          description: ID of the customer associated with the task.
+        status:
+          type: string
+          enum: [pending, completed]
+          description: Current status of the task.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the task was created.
+      required:
+        - policyNumber
+        - expiryDate
+        - customerId
+        - status
